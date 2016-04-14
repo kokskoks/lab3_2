@@ -2,6 +2,7 @@ package edu.iis.mto.staticmock;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -19,17 +20,28 @@ import static org.hamcrest.Matchers.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {ConfigurationLoader.class, NewsReaderFactory.class })
 public class NewsLoaderTest {
+	
 
-	@Test
-	public void publicAndSubscribentNewsSeparation() {
+	private ConfigurationLoader configLoader;
+	private NewsReader newsReader;
+
+	
+	@Before
+	public void setUp(){
 		mockStatic(ConfigurationLoader.class);
-		ConfigurationLoader configLoader = mock(ConfigurationLoader.class);
+		configLoader = mock(ConfigurationLoader.class);
 		when(ConfigurationLoader.getInstance()).thenReturn(configLoader);
 		when(configLoader.loadConfiguration()).thenReturn(new Configuration());
 		
 		mockStatic(NewsReaderFactory.class);
-		NewsReader newsReader = mock(NewsReader.class);
+		newsReader = mock(NewsReader.class);
 		when(NewsReaderFactory.getReader(anyString())).thenReturn(newsReader);
+		
+	}
+
+	@Test
+	public void publicAndSubscribentNewsSeparation() {
+
 		
 		IncomingNews incomingNews = createIncomingNews();
 		incomingNews.add(createIncomingInfo(SubsciptionType.A));
@@ -51,14 +63,6 @@ public class NewsLoaderTest {
 	
 	@Test
 	public void checkIfMethodsAreCalledOnce() {
-		mockStatic(ConfigurationLoader.class);
-		ConfigurationLoader configLoader = mock(ConfigurationLoader.class);
-		when(ConfigurationLoader.getInstance()).thenReturn(configLoader);
-		when(configLoader.loadConfiguration()).thenReturn(new Configuration());
-		
-		mockStatic(NewsReaderFactory.class);
-		NewsReader newsReader = mock(NewsReader.class);
-		when(NewsReaderFactory.getReader(anyString())).thenReturn(newsReader);
 		
 		IncomingNews incomingNews = createIncomingNews();
 		
